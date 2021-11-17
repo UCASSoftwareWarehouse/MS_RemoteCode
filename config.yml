@@ -1,0 +1,9 @@
+dev:
+  app_name: "remote_code"
+  host: "0.0.0.0"
+  port: 6001
+
+prd:
+  app_name: "remote_code"
+  host: "1.2.3.4" # for test\
+  port: 6001

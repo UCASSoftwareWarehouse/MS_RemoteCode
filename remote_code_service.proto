@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package pb;
+// option go_package = "path;name";
+// . 表示生成的go文件的存放地址./，会自动生成目录的。
+// pb_gen 表示生成的go文件所属的包名
+option go_package = "./pb_gen;pb_gen";
+
+//RPC接口
+service RemoteCodeService {
+   rpc HelloWorld(HelloWorldRequest) returns (HelloWorldResponse) {}
+}
+
+/*
+保证每个条目有uid message - struct
+ */
+message HelloWorldRequest {
+   string hello_text = 1;
+}
+
+message HelloWorldResponse {
+   string thanks_text = 1;
+}
