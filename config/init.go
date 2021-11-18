@@ -1,6 +1,8 @@
 package config
 
-import "fmt"
+import (
+	"log"
+)
 
 var Conf *EachConfig
 
@@ -12,6 +14,5 @@ func InitConfig(configFilepath string, env ConfigurationEnv) {
 func InitConfigDefault() {
 	c := parse(DefaultConfigFilepath)
 	Conf = c[DevEnv]
-	fmt.Printf("%+v",Conf)
-
+	log.Printf("InitConfigDefault %+v", Conf)
 }

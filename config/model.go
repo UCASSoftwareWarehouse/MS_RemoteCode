@@ -16,16 +16,20 @@ const (
 type Configuration map[ConfigurationEnv]*EachConfig
 
 type EachConfig struct {
-	AppName                   string `yaml:"app_name"`
-	Host                      string `yaml:"host"`
-	Port                      int    `yaml:"port"`
-	TransformCodeSplitter     string `yaml:"transform_code_splitter"`
+	AppName     string `yaml:"app_name"`
+	Host        string `yaml:"host"`
+	Port        int    `yaml:"port"`
+	MongodbAddr string `yaml:"mongodb_addr"`
+	MysqlAddr   string `yaml:"mysql_addr"`
+	Password    string `yaml:"password"`
+	Username    string `yaml:"username"`
+	Database    string `yaml:"database"`
 }
 
 const (
-	DefaultConfigFilepath = "./config.yml"
+	//DefaultConfigFilepath = "./config.yml"
+	DefaultConfigFilepath = "/Users/zhujianxing/GoLandProjects/code/MS_RemoteCode/config.yml"
 )
-
 
 func parse(configFilepath string) Configuration {
 	println()

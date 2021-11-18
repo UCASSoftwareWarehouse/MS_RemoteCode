@@ -2,8 +2,18 @@ dev:
   app_name: "remote_code"
   host: "0.0.0.0"
   port: 6001
+  mongodb_addr: "47.110.79.125:27017"
+  mysql_addr: "133.133.135.42:3305"
+  username: "root"
+  password: "123456"
+  database: "software"
 
 prd:
   app_name: "remote_code"
   host: "1.2.3.4" # for test\
   port: 6001
+  mongodb_addr: "47.110.79.125:27017" # todo
+  mysql_addr: "133.133.135.42:3305"
+  username: "root"
+  password: "123456"
+  Database: "software"

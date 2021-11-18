@@ -19,6 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RemoteCodeServiceClient interface {
 	HelloWorld(ctx context.Context, in *HelloWorldRequest, opts ...grpc.CallOption) (*HelloWorldResponse, error)
+	DownloadRemoteCode(ctx context.Context, in *DownloadRemoteCodeRequest, opts ...grpc.CallOption) (*DownloadRemoteCodeResponse, error)
 }
 
 type remoteCodeServiceClient struct {
@@ -38,11 +39,21 @@ func (c *remoteCodeServiceClient) HelloWorld(ctx context.Context, in *HelloWorld
 	return out, nil
 }
 
+func (c *remoteCodeServiceClient) DownloadRemoteCode(ctx context.Context, in *DownloadRemoteCodeRequest, opts ...grpc.CallOption) (*DownloadRemoteCodeResponse, error) {
+	out := new(DownloadRemoteCodeResponse)
+	err := c.cc.Invoke(ctx, "/pb.RemoteCodeService/DownloadRemoteCode", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RemoteCodeServiceServer is the server API for RemoteCodeService service.
 // All implementations must embed UnimplementedRemoteCodeServiceServer
 // for forward compatibility
 type RemoteCodeServiceServer interface {
 	HelloWorld(context.Context, *HelloWorldRequest) (*HelloWorldResponse, error)
+	DownloadRemoteCode(context.Context, *DownloadRemoteCodeRequest) (*DownloadRemoteCodeResponse, error)
 	mustEmbedUnimplementedRemoteCodeServiceServer()
 }
 
@@ -52,6 +63,9 @@ type UnimplementedRemoteCodeServiceServer struct {
 
 func (UnimplementedRemoteCodeServiceServer) HelloWorld(context.Context, *HelloWorldRequest) (*HelloWorldResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HelloWorld not implemented")
+}
+func (UnimplementedRemoteCodeServiceServer) DownloadRemoteCode(context.Context, *DownloadRemoteCodeRequest) (*DownloadRemoteCodeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DownloadRemoteCode not implemented")
 }
 func (UnimplementedRemoteCodeServiceServer) mustEmbedUnimplementedRemoteCodeServiceServer() {}
 
@@ -84,6 +98,24 @@ func _RemoteCodeService_HelloWorld_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RemoteCodeService_DownloadRemoteCode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DownloadRemoteCodeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RemoteCodeServiceServer).DownloadRemoteCode(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.RemoteCodeService/DownloadRemoteCode",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RemoteCodeServiceServer).DownloadRemoteCode(ctx, req.(*DownloadRemoteCodeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RemoteCodeService_ServiceDesc is the grpc.ServiceDesc for RemoteCodeService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -94,6 +126,10 @@ var RemoteCodeService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "HelloWorld",
 			Handler:    _RemoteCodeService_HelloWorld_Handler,
+		},
+		{
+			MethodName: "DownloadRemoteCode",
+			Handler:    _RemoteCodeService_DownloadRemoteCode_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
