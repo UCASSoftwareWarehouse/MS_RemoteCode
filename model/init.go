@@ -17,7 +17,7 @@ func InitGorm() {
 	log.Printf("gorm uri=%+v", uri)
 	Db, err = gorm.Open("mysql", uri)
 	if err != nil {
-		log.Fatalf("initGorm err:%+v", err)
+		log.Printf("initGorm err:%+v", err)
 	}
 }
 

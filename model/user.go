@@ -20,7 +20,7 @@ func (u *User) FindUserById(ctx context.Context, id int) (*User, error) {
 	user := &User{}
 	err := db.Where("id=?", id).Find(user).Error
 	if err != nil {
-		log.Fatalf("ser findUserById err:%+v", err)
+		log.Printf("ser findUserById err:%+v", err)
 		return nil, err
 	}
 	return user, nil

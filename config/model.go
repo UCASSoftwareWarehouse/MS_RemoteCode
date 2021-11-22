@@ -38,12 +38,12 @@ func parse(configFilepath string) Configuration {
 	}
 	bs, err := ioutil.ReadFile(configFilepath)
 	if err != nil {
-		log.Fatalf("ConfigForEnv parse failed, read file failed, err=[%v]", err)
+		log.Printf("ConfigForEnv parse failed, read file failed, err=[%v]", err)
 	}
 	conf := make(Configuration)
 	err = yaml.Unmarshal(bs, &conf)
 	if err != nil {
-		log.Fatalf("ConfigForEnv parse failed, unmarshal config failed, err=[%v]", err)
+		log.Printf("ConfigForEnv parse failed, unmarshal config failed, err=[%v]", err)
 	}
 	return conf
 }

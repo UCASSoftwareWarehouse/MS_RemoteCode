@@ -9,6 +9,8 @@ option go_package = "./pb_gen;pb_gen";
 //RPC接口
 service RemoteCodeService {
    rpc HelloWorld(HelloWorldRequest) returns (HelloWorldResponse) {}
+   rpc DownloadRemoteCode(DownloadRemoteCodeRequest) returns (DownloadRemoteCodeResponse) {}
+   rpc DownloadAptCode(DownloadAptCodeRequest) returns (DownloadAptCodeResponse){}
 }
 
 /*
@@ -20,4 +22,29 @@ message HelloWorldRequest {
 
 message HelloWorldResponse {
    string thanks_text = 1;
+}
+
+message DownloadRemoteCodeRequest {
+   string user_id = 1;
+   string platform=2;
+   bool no_deps=3;
+   string only_binary=4;
+   string python_version=5;
+   string package=6;
+   string version=7;
+}
+
+message DownloadRemoteCodeResponse {
+   string message=1;
+   string code=2;
+}
+
+message DownloadAptCodeRequest{
+   string user_id = 1;
+   string package=2;
+}
+
+message DownloadAptCodeResponse{
+   string message=1;
+   string code=2;
 }

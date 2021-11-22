@@ -10,5 +10,5 @@ func main() {
 	// config.InitConfig()
 	config.InitConfigDefault()
 	mongodb.InitEngine()
-	server.StartServe()
+	server.StartServer()
 }

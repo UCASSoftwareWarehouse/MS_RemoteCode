@@ -58,7 +58,7 @@ func (m *Code) Insert(context context.Context, code *Code) (*primitive.ObjectID,
 	collection = GetCollection(m.TableName())
 	res, err := collection.InsertOne(context, code)
 	if err != nil {
-		log.Fatalf("code insert err:%+v", err)
+		log.Printf("code insert err:%+v", err)
 		return nil, err
 	}
 	id := res.InsertedID.(primitive.ObjectID)
@@ -83,7 +83,7 @@ func (m *Code) FindOne(ctx context.Context, code *Code) (*Code, error) {
 	codeItem := &Code{}
 	err := res.Decode(codeItem)
 	if err != nil {
-		log.Fatalf("codefile FindOne err:%+v", err)
+		log.Printf("codefile FindOne err:%+v", err)
 		return nil, err
 	}
 	return codeItem, nil
@@ -96,17 +96,17 @@ func (m *Code) FindAll(ctx context.Context, code *Code) ([]Code, error) {
 	condition := BuildCodeCondition(*code)
 	collection = GetCollection(m.TableName())
 	if cursor, err = collection.Find(context.TODO(), condition, options.Find().SetSkip(0), options.Find().SetLimit(10)); err != nil {
-		log.Fatalf("codefile FindAll err:%+v", err)
+		log.Printf("codefile FindAll err:%+v", err)
 		return nil, err
 	}
 	//延迟关闭游标
 	defer func() {
 		if err = cursor.Close(context.TODO()); err != nil {
-			log.Fatalf("codefile FindAll err:%+v", err)
+			log.Printf("codefile FindAll err:%+v", err)
 		}
 	}()
 	if err = cursor.All(context.TODO(), &results); err != nil {
-		log.Fatalf("codefile FindAll err:%+v", err)
+		log.Printf("codefile FindAll err:%+v", err)
 		return nil, err
 	}
 	for _, result := range results {

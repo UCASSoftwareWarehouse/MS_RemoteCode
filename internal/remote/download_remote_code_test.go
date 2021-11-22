@@ -1,9 +1,14 @@
 package remote
 
 import (
+	"context"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os/exec"
+	"remote_code/config"
+	"remote_code/model"
+	"remote_code/pb_gen"
 	"testing"
 )
 
@@ -36,4 +41,22 @@ func TestDownloadRemoteCode(t *testing.T) {
 		log.Fatal(err)
 	}
 	log.Println("stderr=", string(opBytes))
+}
+
+func TestDownloadRemoteCode2(t *testing.T) {
+	config.InitConfigDefault()
+	model.InitGorm()
+	request := &pb_gen.DownloadRemoteCodeRequest{
+		UserId:        "1",
+		Platform:      "",
+		NoDeps:        false,
+		OnlyBinary:    "",
+		PythonVersion: "",
+		Package:       "numpy",
+		Version:       "1.19.5",
+	}
+	code, err := DownloadRemoteCode(context.Background(), request)
+	//os.RemoveAll("./e867c42b-6b78-4090-a656-72dc0cfd88f4")
+	fmt.Printf("%+v", code)
+	fmt.Printf("%+v", err)
 }

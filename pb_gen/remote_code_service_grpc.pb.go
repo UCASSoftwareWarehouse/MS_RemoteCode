@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type RemoteCodeServiceClient interface {
 	HelloWorld(ctx context.Context, in *HelloWorldRequest, opts ...grpc.CallOption) (*HelloWorldResponse, error)
 	DownloadRemoteCode(ctx context.Context, in *DownloadRemoteCodeRequest, opts ...grpc.CallOption) (*DownloadRemoteCodeResponse, error)
+	DownloadAptCode(ctx context.Context, in *DownloadAptCodeRequest, opts ...grpc.CallOption) (*DownloadAptCodeResponse, error)
 }
 
 type remoteCodeServiceClient struct {
@@ -48,12 +49,22 @@ func (c *remoteCodeServiceClient) DownloadRemoteCode(ctx context.Context, in *Do
 	return out, nil
 }
 
+func (c *remoteCodeServiceClient) DownloadAptCode(ctx context.Context, in *DownloadAptCodeRequest, opts ...grpc.CallOption) (*DownloadAptCodeResponse, error) {
+	out := new(DownloadAptCodeResponse)
+	err := c.cc.Invoke(ctx, "/pb.RemoteCodeService/DownloadAptCode", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RemoteCodeServiceServer is the server API for RemoteCodeService service.
 // All implementations must embed UnimplementedRemoteCodeServiceServer
 // for forward compatibility
 type RemoteCodeServiceServer interface {
 	HelloWorld(context.Context, *HelloWorldRequest) (*HelloWorldResponse, error)
 	DownloadRemoteCode(context.Context, *DownloadRemoteCodeRequest) (*DownloadRemoteCodeResponse, error)
+	DownloadAptCode(context.Context, *DownloadAptCodeRequest) (*DownloadAptCodeResponse, error)
 	mustEmbedUnimplementedRemoteCodeServiceServer()
 }
 
@@ -66,6 +77,9 @@ func (UnimplementedRemoteCodeServiceServer) HelloWorld(context.Context, *HelloWo
 }
 func (UnimplementedRemoteCodeServiceServer) DownloadRemoteCode(context.Context, *DownloadRemoteCodeRequest) (*DownloadRemoteCodeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DownloadRemoteCode not implemented")
+}
+func (UnimplementedRemoteCodeServiceServer) DownloadAptCode(context.Context, *DownloadAptCodeRequest) (*DownloadAptCodeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DownloadAptCode not implemented")
 }
 func (UnimplementedRemoteCodeServiceServer) mustEmbedUnimplementedRemoteCodeServiceServer() {}
 
@@ -116,6 +130,24 @@ func _RemoteCodeService_DownloadRemoteCode_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RemoteCodeService_DownloadAptCode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DownloadAptCodeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RemoteCodeServiceServer).DownloadAptCode(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.RemoteCodeService/DownloadAptCode",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RemoteCodeServiceServer).DownloadAptCode(ctx, req.(*DownloadAptCodeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RemoteCodeService_ServiceDesc is the grpc.ServiceDesc for RemoteCodeService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -130,6 +162,10 @@ var RemoteCodeService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DownloadRemoteCode",
 			Handler:    _RemoteCodeService_DownloadRemoteCode_Handler,
+		},
+		{
+			MethodName: "DownloadAptCode",
+			Handler:    _RemoteCodeService_DownloadAptCode_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
