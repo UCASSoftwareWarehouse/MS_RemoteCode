@@ -5,6 +5,7 @@ import (
 	"os"
 	"remote_code/utils"
 	"runtime"
+	"strings"
 )
 
 var Conf *EachConfig
@@ -25,8 +26,11 @@ func InitConfig(configFilepath string, env ConfigurationEnv) {
 func InitConfigDefault() {
 	//相对路径
 	pwd, _ := os.Getwd()
-	pwd = utils.GetParentDirectory(pwd)
+	if !strings.HasSuffix(pwd, "MS_RemoteCode") {
+		pwd = utils.GetParentDirectory(pwd)
+	}
 	pwd += "/config.yml"
+	log.Printf("config file path:%+v", pwd)
 	//c := parse(DefaultConfigFilepath)
 	c := parse(pwd)
 	//判断mac or linux
