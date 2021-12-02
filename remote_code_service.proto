@@ -10,7 +10,7 @@ option go_package = "./pb_gen;pb_gen";
 service RemoteCodeService {
    rpc HelloWorld(HelloWorldRequest) returns (HelloWorldResponse) {}
    rpc DownloadRemoteCode(DownloadRemoteCodeRequest) returns (DownloadRemoteCodeResponse) {}
-   rpc DownloadAptCode(DownloadAptCodeRequest) returns (DownloadAptCodeResponse){}
+   rpc DownloadAptDeb(DownloadAptDebRequest) returns (DownloadAptDebResponse){}
 }
 
 /*
@@ -39,12 +39,13 @@ message DownloadRemoteCodeResponse {
    string code=2;
 }
 
-message DownloadAptCodeRequest{
+message DownloadAptDebRequest{
    string user_id = 1;
    string package=2;
+   string version=3;
 }
 
-message DownloadAptCodeResponse{
+message DownloadAptDebResponse{
    string message=1;
    string code=2;
 }

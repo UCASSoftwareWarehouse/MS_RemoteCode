@@ -10,13 +10,11 @@ import (
 	"remote_code/pb_gen"
 	"remote_code/utils"
 	"strconv"
-	"strings"
 )
 
-func DownloadRemoteCode(ctx context.Context, req *pb_gen.DownloadRemoteCodeRequest) (*pb_gen.DownloadRemoteCodeResponse, error) {
+func DownloadAptDeb(ctx context.Context, req *pb_gen.DownloadAptDebRequest) (*pb_gen.DownloadAptDebResponse, error) {
 
-	var args []string
-	resp := &pb_gen.DownloadRemoteCodeResponse{}
+	resp := &pb_gen.DownloadAptDebResponse{}
 
 	//校验userid todo 鉴权？
 	user := &model.User{}
@@ -42,18 +40,7 @@ func DownloadRemoteCode(ctx context.Context, req *pb_gen.DownloadRemoteCodeReque
 		resp.Code = constant.STATUS_OK
 		return resp, nil
 	}
-	if len(req.Platform) != 0 {
-		args = append(args, "--platform "+req.Platform)
-	}
-	if req.NoDeps {
-		args = append(args, "--no-deps ")
-	}
-	if len(req.OnlyBinary) != 0 {
-		args = append(args, "--only-binary "+req.OnlyBinary)
-	}
-	if len(req.PythonVersion) != 0 {
-		args = append(args, "--python-version "+req.PythonVersion)
-	}
+
 	fileName := req.Package
 	if len(req.Version) != 0 {
 		fileName = fmt.Sprintf("%s==%s", req.Package, req.Version)
@@ -62,19 +49,24 @@ func DownloadRemoteCode(ctx context.Context, req *pb_gen.DownloadRemoteCodeReque
 	//执行pip download命令
 	pwd, _ := os.Getwd()
 	pwd = utils.GetParentDirectory(pwd)
-	dirName := pwd + "/data/" + utils.GetUUID()
-	args = append(args, " -d "+dirName)
-	command := "pip3 download " + fileName + strings.Join(args, " ")
+	uuid := utils.GetUUID()
+	//deb文件download地址： ../data/{uuid}/
+	dirName := pwd + "/data/" + uuid
+	log.Printf("download path:%+v", dirName)
+	utils.CommandBash("cd ../data")
+	utils.CommandBash("mkdir " + uuid)
+	utils.CommandBash("cd " + uuid)
+	command := "apt-get download " + fileName
 	log.Printf("command from %+v:%+v", req.UserId, command)
 	stdout, stderr, err := utils.CommandBash(command)
 	if err != nil {
-		log.Printf("DownloadRemoteCode CommandBash err:%+v", err)
+		log.Printf("DownloadAptDeb CommandBash err:%+v", err)
 		resp.Message = err.Error()
 		resp.Code = constant.STATUS_BADREQUEST
 		return resp, err
 	}
 	if len(stderr) != 0 {
-		log.Printf("DownloadRemoteCode CommandBash err:%+v", err)
+		log.Printf("DownloadAptDeb CommandBash err:%+v", err)
 		resp.Message = stderr
 		resp.Code = constant.STATUS_BADREQUEST
 		return resp, nil
@@ -86,12 +78,12 @@ func DownloadRemoteCode(ctx context.Context, req *pb_gen.DownloadRemoteCodeReque
 		pypi包下载位置 "../MS_RemoteCode/internal/data/bb5e44e4febb4fcc88ea6824db4f9689"
 		打zip包位置 "../MS_RemoteCode/internal/data/numpy.zip"
 	*/
-	filePath := utils.GetParentDirectory(dirName)
-	filePath = fmt.Sprintf("%s/%s.zip", filePath, req.Package)
-	log.Println(dirName)
-	log.Println(filePath)
+	//filePath := utils.GetParentDirectory(dirName)
+	//filePath = fmt.Sprintf("%s/%s.zip", filePath, req.Package)
+	//log.Println(dirName)
+	//log.Println(filePath)
 	// todo judge fileType 统一为zip
-	utils.Zip(dirName, filePath)
+	//utils.Zip(dirName, filePath)
 	// todo 上传接口 接入guohao mongodb_code & mysql_project
 
 	//删除文件

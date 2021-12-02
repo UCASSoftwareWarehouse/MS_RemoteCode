@@ -198,7 +198,7 @@ func ExistDir(dirname string) bool {
 	return (err == nil || os.IsExist(err)) && fi.IsDir()
 }
 
-//只含单文件的文件夹中 判断文件类型
+//只含单文件的文件夹中 判断文件名称
 func GetSingleFileName(filePath string) string {
 	filepathNames, _ := filepath.Glob(filepath.Join(filePath, "*"))
 	idx := strings.LastIndex(filepathNames[0], "/")

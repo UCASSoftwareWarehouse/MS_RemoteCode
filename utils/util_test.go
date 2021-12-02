@@ -74,3 +74,9 @@ func TestUnWhell(t *testing.T) {
 	err := UnWheel(srcPath, destPath)
 	log.Printf("err=%+v", err)
 }
+
+func TestGetSingleFileName(t *testing.T) {
+	srcPath := "/Users/zhujianxing/GoLandProjects/code/MS_RemoteCode/internal/data/b16db197c7e14bb38f8c0b1c66e2523a"
+	name := GetSingleFileName(srcPath)
+	log.Println(name)
+}

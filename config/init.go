@@ -26,7 +26,7 @@ func InitConfig(configFilepath string, env ConfigurationEnv) {
 func InitConfigDefault() {
 	//相对路径
 	pwd, _ := os.Getwd()
-	if !strings.HasSuffix(pwd, "MS_RemoteCode") {
+	for !strings.HasSuffix(pwd, "MS_RemoteCode") {
 		pwd = utils.GetParentDirectory(pwd)
 	}
 	pwd += "/config.yml"

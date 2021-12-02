@@ -20,7 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type RemoteCodeServiceClient interface {
 	HelloWorld(ctx context.Context, in *HelloWorldRequest, opts ...grpc.CallOption) (*HelloWorldResponse, error)
 	DownloadRemoteCode(ctx context.Context, in *DownloadRemoteCodeRequest, opts ...grpc.CallOption) (*DownloadRemoteCodeResponse, error)
-	DownloadAptCode(ctx context.Context, in *DownloadAptCodeRequest, opts ...grpc.CallOption) (*DownloadAptCodeResponse, error)
+	DownloadAptDeb(ctx context.Context, in *DownloadAptDebRequest, opts ...grpc.CallOption) (*DownloadAptDebResponse, error)
 }
 
 type remoteCodeServiceClient struct {
@@ -49,9 +49,9 @@ func (c *remoteCodeServiceClient) DownloadRemoteCode(ctx context.Context, in *Do
 	return out, nil
 }
 
-func (c *remoteCodeServiceClient) DownloadAptCode(ctx context.Context, in *DownloadAptCodeRequest, opts ...grpc.CallOption) (*DownloadAptCodeResponse, error) {
-	out := new(DownloadAptCodeResponse)
-	err := c.cc.Invoke(ctx, "/pb.RemoteCodeService/DownloadAptCode", in, out, opts...)
+func (c *remoteCodeServiceClient) DownloadAptDeb(ctx context.Context, in *DownloadAptDebRequest, opts ...grpc.CallOption) (*DownloadAptDebResponse, error) {
+	out := new(DownloadAptDebResponse)
+	err := c.cc.Invoke(ctx, "/pb.RemoteCodeService/DownloadAptDeb", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (c *remoteCodeServiceClient) DownloadAptCode(ctx context.Context, in *Downl
 type RemoteCodeServiceServer interface {
 	HelloWorld(context.Context, *HelloWorldRequest) (*HelloWorldResponse, error)
 	DownloadRemoteCode(context.Context, *DownloadRemoteCodeRequest) (*DownloadRemoteCodeResponse, error)
-	DownloadAptCode(context.Context, *DownloadAptCodeRequest) (*DownloadAptCodeResponse, error)
+	DownloadAptDeb(context.Context, *DownloadAptDebRequest) (*DownloadAptDebResponse, error)
 	mustEmbedUnimplementedRemoteCodeServiceServer()
 }
 
@@ -78,8 +78,8 @@ func (UnimplementedRemoteCodeServiceServer) HelloWorld(context.Context, *HelloWo
 func (UnimplementedRemoteCodeServiceServer) DownloadRemoteCode(context.Context, *DownloadRemoteCodeRequest) (*DownloadRemoteCodeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DownloadRemoteCode not implemented")
 }
-func (UnimplementedRemoteCodeServiceServer) DownloadAptCode(context.Context, *DownloadAptCodeRequest) (*DownloadAptCodeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DownloadAptCode not implemented")
+func (UnimplementedRemoteCodeServiceServer) DownloadAptDeb(context.Context, *DownloadAptDebRequest) (*DownloadAptDebResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DownloadAptDeb not implemented")
 }
 func (UnimplementedRemoteCodeServiceServer) mustEmbedUnimplementedRemoteCodeServiceServer() {}
 
@@ -130,20 +130,20 @@ func _RemoteCodeService_DownloadRemoteCode_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RemoteCodeService_DownloadAptCode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DownloadAptCodeRequest)
+func _RemoteCodeService_DownloadAptDeb_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DownloadAptDebRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RemoteCodeServiceServer).DownloadAptCode(ctx, in)
+		return srv.(RemoteCodeServiceServer).DownloadAptDeb(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.RemoteCodeService/DownloadAptCode",
+		FullMethod: "/pb.RemoteCodeService/DownloadAptDeb",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RemoteCodeServiceServer).DownloadAptCode(ctx, req.(*DownloadAptCodeRequest))
+		return srv.(RemoteCodeServiceServer).DownloadAptDeb(ctx, req.(*DownloadAptDebRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -164,8 +164,8 @@ var RemoteCodeService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RemoteCodeService_DownloadRemoteCode_Handler,
 		},
 		{
-			MethodName: "DownloadAptCode",
-			Handler:    _RemoteCodeService_DownloadAptCode_Handler,
+			MethodName: "DownloadAptDeb",
+			Handler:    _RemoteCodeService_DownloadAptDeb_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
