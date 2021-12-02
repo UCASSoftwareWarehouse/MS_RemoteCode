@@ -16,4 +16,4 @@ prd:
   mysql_addr: "133.133.135.42:3305"
   username: "root"
   password: "123456"
-  Database: "software"
+  database: "software"

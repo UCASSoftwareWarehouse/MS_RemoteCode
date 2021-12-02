@@ -53,9 +53,7 @@ func DownloadAptDeb(ctx context.Context, req *pb_gen.DownloadAptDebRequest) (*pb
 	//deb文件download地址： ../data/{uuid}/
 	dirName := pwd + "/data/" + uuid
 	log.Printf("download path:%+v", dirName)
-	utils.CommandBash("cd ../data")
-	utils.CommandBash("mkdir " + uuid)
-	utils.CommandBash("cd " + uuid)
+	utils.CommandBash("mkdir ../data/" + uuid)
 	command := "apt-get download " + fileName
 	log.Printf("command from %+v:%+v", req.UserId, command)
 	stdout, stderr, err := utils.CommandBash(command)
@@ -71,6 +69,7 @@ func DownloadAptDeb(ctx context.Context, req *pb_gen.DownloadAptDebRequest) (*pb
 		resp.Code = constant.STATUS_BADREQUEST
 		return resp, nil
 	}
+	utils.CommandBash("mv ./*.deb ../data/" + uuid)
 	log.Printf("stdout:%+v", stdout)
 
 	/*
