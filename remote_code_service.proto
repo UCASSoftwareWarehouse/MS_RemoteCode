@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package pb;
+import "google/protobuf/timestamp.proto";
 // option go_package = "path;name";
 // . 表示生成的go文件的存放地址./，会自动生成目录的。
 // pb_gen 表示生成的go文件所属的包名
@@ -32,20 +33,60 @@ message DownloadRemoteCodeRequest {
    string python_version=5;
    string package=6;
    string version=7;
+   UploadMetadata metadata = 8;
 }
 
 message DownloadRemoteCodeResponse {
    string message=1;
    string code=2;
+   Project projectInfo = 3;
 }
 
 message DownloadAptDebRequest{
    string user_id = 1;
    string package=2;
    string version=3;
+   string type=4;
 }
 
 message DownloadAptDebResponse{
    string message=1;
    string code=2;
 }
+
+enum FileType{
+   project = 0;
+   codes = 1;
+   binary = 2;
+   code_dir = 3;
+   code_file = 4;
+}
+
+message FileInfo{
+   string fileName = 1;
+   FileType fileType = 2;
+   //  uint64 fileSize = 2;
+   //  google.protobuf.Timestamp updatetime = 3;
+}
+
+message UploadMetadata{
+   uint64 projectId = 1;
+   uint64 userId = 2;
+   FileInfo fileInfo = 3;
+   //  FileType fileType = 4;
+}
+
+message Project{
+   uint64 id = 1;
+   string projectName = 2;
+   uint64 userId = 3;
+   string tags = 4;
+   string license = 5;
+   google.protobuf.Timestamp updatetime = 6;
+   string projectDescription = 7;
+   string codeAddr = 8;
+   string binaryAddr = 9;
+   uint32 classifiers = 10;
+}
+
+

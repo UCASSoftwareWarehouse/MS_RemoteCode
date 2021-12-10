@@ -14,6 +14,19 @@ import (
 
 func DownloadAptDeb(ctx context.Context, req *pb_gen.DownloadAptDebRequest) (*pb_gen.DownloadAptDebResponse, error) {
 
+	if req.Type == "deb" {
+		return DownloadAptDebPkg(ctx, req)
+	} else if req.Type == "code" {
+		//return DownloadAptDebCode(ctx,req)
+	}
+
+	resp := &pb_gen.DownloadAptDebResponse{}
+	resp.Code = constant.STATUS_BADREQUEST
+	resp.Message = "invalid type"
+	return resp, nil
+}
+
+func DownloadAptDebPkg(ctx context.Context, req *pb_gen.DownloadAptDebRequest) (*pb_gen.DownloadAptDebResponse, error) {
 	resp := &pb_gen.DownloadAptDebResponse{}
 
 	//校验userid todo 鉴权？
@@ -43,7 +56,7 @@ func DownloadAptDeb(ctx context.Context, req *pb_gen.DownloadAptDebRequest) (*pb
 
 	fileName := req.Package
 	if len(req.Version) != 0 {
-		fileName = fmt.Sprintf("%s==%s", req.Package, req.Version)
+		fileName = fmt.Sprintf("%s=%s\\*", req.Package, req.Version)
 	}
 
 	//执行pip download命令
@@ -74,7 +87,7 @@ func DownloadAptDeb(ctx context.Context, req *pb_gen.DownloadAptDebRequest) (*pb
 
 	/*
 		压缩
-		pypi包下载位置 "../MS_RemoteCode/internal/data/bb5e44e4febb4fcc88ea6824db4f9689"
+		deb包下载位置 "../MS_RemoteCode/internal/data/bb5e44e4febb4fcc88ea6824db4f9689"
 		打zip包位置 "../MS_RemoteCode/internal/data/numpy.zip"
 	*/
 	//filePath := utils.GetParentDirectory(dirName)
@@ -92,3 +105,7 @@ func DownloadAptDeb(ctx context.Context, req *pb_gen.DownloadAptDebRequest) (*pb
 	resp.Code = constant.STATUS_OK
 	return resp, nil
 }
+
+//func DownloadAptDebCode(ctx context.Context, req *pb_gen.DownloadAptDebRequest) (*pb_gen.DownloadAptDebResponse, error) {
+//
+//}

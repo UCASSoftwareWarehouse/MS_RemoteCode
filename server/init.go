@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"remote_code/config"
+	"remote_code/consul"
 	"remote_code/pb_gen"
 )
 
@@ -21,6 +22,7 @@ func StartServer() {
 	var options []grpc.ServerOption
 	options = append(options, grpc.MaxSendMsgSize(5*1024*1024*1024*1024), grpc.MaxRecvMsgSize(5*1024*1024*1024*1024))
 	grpcServer := grpc.NewServer(options...)
+	consul.MustRegisterGRPCServer(grpcServer)
 	pb_gen.RegisterRemoteCodeServiceServer(grpcServer, newRemoteCodeServer())
 	log.Printf("%s ready to server at %s...", appName, addr)
 	err = grpcServer.Serve(lis)

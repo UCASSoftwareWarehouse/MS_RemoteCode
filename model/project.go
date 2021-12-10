@@ -2,6 +2,7 @@ package model
 
 import (
 	"context"
+	"github.com/jinzhu/gorm"
 	"log"
 	"time"
 )
@@ -31,4 +32,16 @@ func (p *Project) FindProjectById(ctx context.Context, id int) (*Project, error)
 		return nil, err
 	}
 	return project, nil
+}
+
+// get softmatadata by primary key projectid
+func GetProjectById(db *gorm.DB, projectId uint64) (*Project, error) {
+	project := new(Project)
+	err := db.Where("ID = ?", projectId).First(project).Error
+	if err != nil {
+		log.Printf("get project by project id error, err=[%v]", err)
+		return nil, err
+	}
+	log.Printf("get project info by id success!")
+	return project, err
 }

@@ -7,6 +7,8 @@ dev:
   username: "root"
   password: "123456"
   database: "software"
+  consul_addr: "localhost:8500"
+  network_interface: "en0"
 
 prd:
   app_name: "remote_code"
@@ -17,3 +19,5 @@ prd:
   username: "root"
   password: "123456"
   database: "software"
+  consul_addr: "http://133.133.135.42:8500"
+  network_interface: "eth2"
