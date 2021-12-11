@@ -9,7 +9,6 @@ import (
 	"remote_code/model"
 	"remote_code/pb_gen"
 	"remote_code/utils"
-	"strconv"
 	"strings"
 )
 
@@ -20,14 +19,8 @@ func DownloadRemoteCode(ctx context.Context, req *pb_gen.DownloadRemoteCodeReque
 
 	//校验userid todo 鉴权？
 	user := &model.User{}
-	userId, err := strconv.Atoi(req.UserId)
-	if err != nil {
-		resp.Message = "invalid user_id"
-		resp.Code = constant.STATUS_BADREQUEST
-		log.Printf("invalid user_id")
-		return resp, err
-	}
-	_, err = user.FindUserById(ctx, userId)
+	userId := req.Metadata.UserId
+	_, err := user.FindUserById(ctx, userId)
 	if err != nil {
 		resp.Message = "user_id doesn't exit"
 		resp.Code = constant.STATUS_BADREQUEST
@@ -43,20 +36,21 @@ func DownloadRemoteCode(ctx context.Context, req *pb_gen.DownloadRemoteCodeReque
 		return resp, nil
 	}
 	if len(req.Platform) != 0 {
+		//args = append(args, "--platform "+req.Platform+" --no-deps")
 		args = append(args, "--platform "+req.Platform)
 	}
 	if req.NoDeps {
-		args = append(args, "--no-deps ")
+		args = append(args, "--no-deps")
 	}
 	if len(req.OnlyBinary) != 0 {
-		args = append(args, "--only-binary "+req.OnlyBinary)
+		args = append(args, "--only-binary="+req.OnlyBinary)
 	}
 	if len(req.PythonVersion) != 0 {
 		args = append(args, "--python-version "+req.PythonVersion)
 	}
 	fileName := req.Package
 	if len(req.Version) != 0 {
-		fileName = fmt.Sprintf("%s==%s", req.Package, req.Version)
+		fileName = fmt.Sprintf("%s==%s ", req.Package, req.Version)
 	}
 
 	//执行pip download命令
@@ -65,7 +59,7 @@ func DownloadRemoteCode(ctx context.Context, req *pb_gen.DownloadRemoteCodeReque
 	dirName := pwd + "/data/" + utils.GetUUID()
 	args = append(args, " -d "+dirName)
 	command := "pip3 download " + fileName + strings.Join(args, " ")
-	log.Printf("command from %+v:%+v", req.UserId, command)
+	log.Printf("command from user %+v:%+v", req.Metadata.UserId, command)
 	stdout, stderr, err := utils.CommandBash(command)
 	if err != nil {
 		log.Printf("DownloadRemoteCode CommandBash err:%+v", err)
@@ -92,10 +86,23 @@ func DownloadRemoteCode(ctx context.Context, req *pb_gen.DownloadRemoteCodeReque
 	log.Println(filePath)
 	// todo judge fileType 统一为zip
 	utils.Zip(dirName, filePath)
-	// todo 上传接口 接入guohao mongodb_code & mysql_project
-
+	// todo 上传接口 接入guohao mongodb_code
+	//response, err := upload.Upload(ctx, req.Metadata.UserId, req.Metadata.ProjectId, filePath, pb_gen2.FileType(req.Metadata.FileInfo.FileType))
+	//project:=response.ProjectInfo
+	//resp.ProjectInfo=&pb_gen.Project{
+	//	Id:                 project.Id,
+	//	ProjectName:        project.ProjectName,
+	//	UserId:             project.UserId,
+	//	Tags:               project.Tags,
+	//	License:            project.License,
+	//	Updatetime:         project.Updatetime,
+	//	ProjectDescription: project.ProjectDescription,
+	//	CodeAddr:           project.CodeAddr,
+	//	BinaryAddr:         project.BinaryAddr,
+	//	Classifiers:        project.Classifiers,
+	//}
 	//删除文件
-	//os.RemoveAll(dirName)
+	//defer os.RemoveAll(dirName)
 
 	resp.Message = constant.MESSAGE_OK
 	resp.Code = constant.STATUS_OK

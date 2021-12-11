@@ -47,13 +47,20 @@ func TestDownloadRemoteCode2(t *testing.T) {
 	config.InitConfigDefault()
 	model.InitGorm()
 	request := &pb_gen.DownloadRemoteCodeRequest{
-		UserId:        "1",
-		Platform:      "",
-		NoDeps:        false,
-		OnlyBinary:    "",
+		Metadata: &pb_gen.UploadMetadata{
+			ProjectId: 1,
+			UserId:    1,
+			FileInfo: &pb_gen.FileInfo{
+				FileName: "",
+				FileType: 0,
+			},
+		},
+		Platform:      "win_amd64",
+		NoDeps:        true,
+		OnlyBinary:    ":all:",
 		PythonVersion: "",
 		Package:       "numpy",
-		Version:       "1.19.5",
+		Version:       "1.21.0",
 	}
 	code, err := DownloadRemoteCode(context.Background(), request)
 	//os.RemoveAll("./e867c42b-6b78-4090-a656-72dc0cfd88f4")

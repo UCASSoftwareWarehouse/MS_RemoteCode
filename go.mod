@@ -3,6 +3,7 @@ module remote_code
 go 1.17
 
 require (
+	MS_Local v0.0.0-00010101000000-000000000000
 	github.com/hashicorp/consul/api v1.11.0
 	github.com/jinzhu/gorm v1.9.16
 	github.com/satori/go.uuid v1.2.0
@@ -12,12 +13,12 @@ require (
 	gopkg.in/yaml.v2 v2.2.8
 )
 
-//replace ms_local => github.com/UCASSoftwareWarehouse/MS_local v0.0.1 // indirect
+replace MS_Local => github.com/UCASSoftwareWarehouse/MS_Local v0.0.0-20211210111324-dd99ca64b4de // indirect
 
 require (
 	github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da // indirect
 	github.com/fatih/color v1.9.0 // indirect
-	github.com/go-sql-driver/mysql v1.5.0 // indirect
+	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.1 // indirect

@@ -13,7 +13,14 @@ func TestDownloadAptDeb(t *testing.T) {
 	config.InitConfigDefault()
 	model.InitGorm()
 	request := &pb_gen.DownloadAptDebRequest{
-		UserId:  "1",
+		Metadata: &pb_gen.UploadMetadata{
+			ProjectId: 1,
+			UserId:    1,
+			FileInfo: &pb_gen.FileInfo{
+				FileName: "",
+				FileType: 0,
+			},
+		},
 		Package: "jq",
 		Version: "",
 		Type:    "deb",
@@ -27,7 +34,14 @@ func TestDownloadAptDeb2(t *testing.T) {
 	config.InitConfigDefault()
 	model.InitGorm()
 	request := &pb_gen.DownloadAptDebRequest{
-		UserId:  "1",
+		Metadata: &pb_gen.UploadMetadata{
+			ProjectId: 1,
+			UserId:    1,
+			FileInfo: &pb_gen.FileInfo{
+				FileName: "",
+				FileType: 0,
+			},
+		},
 		Package: "jq",
 		Version: "1.5",
 		Type:    "deb",

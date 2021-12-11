@@ -181,7 +181,6 @@ func Untargz(src, dst string) (err error) {
 			file.Close()
 		}
 	}
-
 	return nil
 }
 

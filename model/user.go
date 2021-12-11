@@ -15,7 +15,7 @@ func (user *User) TableName() string {
 	return "user"
 }
 
-func (u *User) FindUserById(ctx context.Context, id int) (*User, error) {
+func (u *User) FindUserById(ctx context.Context, id uint64) (*User, error) {
 	db := GetDb().Model(User{})
 	user := &User{}
 	err := db.Where("id=?", id).Find(user).Error

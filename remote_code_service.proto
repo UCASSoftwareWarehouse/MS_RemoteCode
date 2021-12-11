@@ -26,7 +26,7 @@ message HelloWorldResponse {
 }
 
 message DownloadRemoteCodeRequest {
-   string user_id = 1;
+//   string user_id = 1;
    string platform=2;
    bool no_deps=3;
    string only_binary=4;
@@ -43,10 +43,11 @@ message DownloadRemoteCodeResponse {
 }
 
 message DownloadAptDebRequest{
-   string user_id = 1;
+//   string user_id = 1;
    string package=2;
    string version=3;
    string type=4;
+   UploadMetadata metadata = 8;
 }
 
 message DownloadAptDebResponse{

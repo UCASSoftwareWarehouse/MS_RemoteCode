@@ -5,7 +5,6 @@ import (
 	"google.golang.org/grpc/balancer/roundrobin"
 	"remote_code/config"
 
-	//_ "github.com/mbobakov/grpc-consul-resolver" // It's important
 	"google.golang.org/grpc"
 )
 

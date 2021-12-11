@@ -9,7 +9,6 @@ import (
 	"remote_code/model"
 	"remote_code/pb_gen"
 	"remote_code/utils"
-	"strconv"
 )
 
 func DownloadAptDeb(ctx context.Context, req *pb_gen.DownloadAptDebRequest) (*pb_gen.DownloadAptDebResponse, error) {
@@ -31,14 +30,9 @@ func DownloadAptDebPkg(ctx context.Context, req *pb_gen.DownloadAptDebRequest) (
 
 	//校验userid todo 鉴权？
 	user := &model.User{}
-	userId, err := strconv.Atoi(req.UserId)
-	if err != nil {
-		resp.Message = "invalid user_id"
-		resp.Code = constant.STATUS_BADREQUEST
-		log.Printf("invalid user_id")
-		return resp, err
-	}
-	_, err = user.FindUserById(ctx, userId)
+	userId := req.Metadata.UserId
+
+	_, err := user.FindUserById(ctx, userId)
 	if err != nil {
 		resp.Message = "user_id doesn't exit"
 		resp.Code = constant.STATUS_BADREQUEST
@@ -68,7 +62,7 @@ func DownloadAptDebPkg(ctx context.Context, req *pb_gen.DownloadAptDebRequest) (
 	log.Printf("download path:%+v", dirName)
 	utils.CommandBash("mkdir ../data/" + uuid)
 	command := "apt-get download " + fileName
-	log.Printf("command from %+v:%+v", req.UserId, command)
+	log.Printf("command from %+v:%+v", req.Metadata.UserId, command)
 	stdout, stderr, err := utils.CommandBash(command)
 	if err != nil {
 		log.Printf("DownloadAptDeb CommandBash err:%+v", err)

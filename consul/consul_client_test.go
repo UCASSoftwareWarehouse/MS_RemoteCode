@@ -5,7 +5,7 @@ import (
 	"log"
 	"remote_code/config"
 	"remote_code/pb_gen"
-	//pb_gen2 "ms_local/pb_gen"
+	//pb_gen2 "MS_Local/pb_gen"
 	"testing"
 )
 
