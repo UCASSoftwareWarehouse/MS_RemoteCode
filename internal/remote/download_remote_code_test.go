@@ -43,6 +43,7 @@ func TestDownloadRemoteCode(t *testing.T) {
 	log.Println("stderr=", string(opBytes))
 }
 
+//test zip
 func TestDownloadRemoteCode2(t *testing.T) {
 	config.InitConfigDefault()
 	model.InitGorm()
@@ -55,15 +56,66 @@ func TestDownloadRemoteCode2(t *testing.T) {
 				FileType: 0,
 			},
 		},
-		Platform:      "win_amd64",
-		NoDeps:        true,
-		OnlyBinary:    ":all:",
+		Platform: "win_amd64",
+		NoDeps:   true,
+		//OnlyBinary:    ":all:",
 		PythonVersion: "",
 		Package:       "numpy",
-		Version:       "1.21.0",
+		Version:       "1.19.1",
 	}
 	code, err := DownloadRemoteCode(context.Background(), request)
 	//os.RemoveAll("./e867c42b-6b78-4090-a656-72dc0cfd88f4")
+	fmt.Printf("%+v", code)
+	fmt.Printf("%+v", err)
+}
+
+//whl test
+func TestDownloadRemoteCode3(t *testing.T) {
+	config.InitConfigDefault()
+	model.InitGorm()
+	request := &pb_gen.DownloadRemoteCodeRequest{
+		Metadata: &pb_gen.UploadMetadata{
+			ProjectId: 1,
+			UserId:    1,
+			FileInfo: &pb_gen.FileInfo{
+				FileName: "",
+				FileType: 0,
+			},
+		},
+		Platform: "",
+		NoDeps:   false,
+		//OnlyBinary:    ":all:",
+		PythonVersion: "",
+		Package:       "numpy",
+		Version:       "",
+	}
+	code, err := DownloadRemoteCode(context.Background(), request)
+	//os.RemoveAll("./e867c42b-6b78-4090-a656-72dc0cfd88f4")
+	fmt.Printf("%+v", code)
+	fmt.Printf("%+v", err)
+}
+
+//tag.gz test
+func TestDownloadRemoteCode4(t *testing.T) {
+	config.InitConfigDefault()
+	model.InitGorm()
+	request := &pb_gen.DownloadRemoteCodeRequest{
+		Metadata: &pb_gen.UploadMetadata{
+			ProjectId: 1,
+			UserId:    1,
+			FileInfo: &pb_gen.FileInfo{
+				FileName: "",
+				FileType: 0,
+			},
+		},
+		Platform: "",
+		NoDeps:   false,
+		//OnlyBinary:    ":all:",
+		PythonVersion: "",
+		Package:       "panda",
+		Version:       "",
+	}
+	code, err := DownloadRemoteCode(context.Background(), request)
 	fmt.Printf("%+v", code)
 	fmt.Printf("%+v", err)
 }

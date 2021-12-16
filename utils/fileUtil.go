@@ -4,9 +4,13 @@ import (
 	"archive/tar"
 	"archive/zip"
 	"compress/gzip"
+	"fmt"
 	uuid "github.com/satori/go.uuid"
 	"io"
+	"io/ioutil"
+	"log"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 )
@@ -116,6 +120,23 @@ func Unzip(zipFile string, destDir string) error {
 	return nil
 }
 
+func TarGz2Zip(src, dst string) (string, error) {
+	dirPath := GetParentDirectory(src)
+	err := Untargz(src, dirPath)
+	if err != nil {
+		log.Printf("unTargz err:%+v", err)
+		return "", err
+	}
+	os.RemoveAll(src)
+	err = Zip(dirPath, dst)
+	if err != nil {
+		log.Printf("zip err:%+v", err)
+		return "", err
+	}
+	os.RemoveAll(strings.ReplaceAll(dst, ".zip", ""))
+	return dst, nil
+}
+
 func Untargz(src, dst string) (err error) {
 	// 打开准备解压的 tar 包
 	fr, err := os.Open(src)
@@ -191,6 +212,16 @@ func UnWheel(src, dst string) error {
 	return Unzip(src, dst)
 }
 
+func Whl2Zip(src string) (string, error) {
+	dst := strings.ReplaceAll(src, ".whl", ".zip")
+	err := os.Rename(src, dst)
+	if err != nil {
+		log.Printf("Whl2Zip err:%+v", err)
+		return "", err
+	}
+	return dst, nil
+}
+
 // 判断目录是否存在
 func ExistDir(dirname string) bool {
 	fi, err := os.Stat(dirname)
@@ -216,21 +247,36 @@ func JudgeSingleFileType(filePath string) string {
 	return fileType
 }
 
-func getDir(path string) string {
-	return subString(path, 0, strings.LastIndex(path, "/"))
+//根据文件路径判断类型
+func JudgeFileTypeByPath(filePath string) string {
+	idx := strings.LastIndex(filePath, ".")
+	fileType := filePath[idx+1:]
+	return fileType
 }
 
-func subString(str string, start, end int) string {
-	rs := []rune(str)
-	length := len(rs)
-
-	if start < 0 || start > length {
-		panic("start is wrong")
+func GetAllFile(pathname string) ([]string, error) {
+	var s []string
+	rd, err := ioutil.ReadDir(pathname)
+	if err != nil {
+		fmt.Println("read dir fail:", err)
+		return s, err
 	}
 
-	if end < start || end > length {
-		panic("end is wrong")
+	for _, fi := range rd {
+		if !fi.IsDir() {
+			fullName := pathname + "/" + fi.Name()
+			s = append(s, fullName)
+		}
 	}
+	return s, nil
+}
 
-	return string(rs[start:end])
+func GetFileName(filePath string) string {
+	filenameWithSuffix := path.Base(filePath)
+	if strings.Contains(filenameWithSuffix, "tar.gz") {
+		return strings.ReplaceAll(filenameWithSuffix, ".tar.gz", "")
+	}
+	fileSuffix := path.Ext(filenameWithSuffix)
+	filenameOnly := strings.TrimSuffix(filenameWithSuffix, fileSuffix)
+	return filenameOnly
 }

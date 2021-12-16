@@ -17,7 +17,6 @@ func DownloadRemoteCode(ctx context.Context, req *pb_gen.DownloadRemoteCodeReque
 	var args []string
 	resp := &pb_gen.DownloadRemoteCodeResponse{}
 
-	//校验userid todo 鉴权？
 	user := &model.User{}
 	userId := req.Metadata.UserId
 	_, err := user.FindUserById(ctx, userId)
@@ -59,7 +58,8 @@ func DownloadRemoteCode(ctx context.Context, req *pb_gen.DownloadRemoteCodeReque
 		pwd = utils.GetParentDirectory(pwd)
 	}
 	log.Println(pwd)
-	dirName := pwd + "/internal/data/" + utils.GetUUID()
+	initPath := pwd + "/internal/data/" + utils.GetUUID()
+	dirName := initPath + "/tmp"
 	args = append(args, " -d "+dirName)
 	var command string
 	if config.IsProd() {
@@ -85,16 +85,20 @@ func DownloadRemoteCode(ctx context.Context, req *pb_gen.DownloadRemoteCodeReque
 
 	/*
 		压缩
-		pypi包下载位置 "../MS_RemoteCode/internal/data/bb5e44e4febb4fcc88ea6824db4f9689"
-		打zip包位置 "../MS_RemoteCode/internal/data/numpy.zip"
+		pypi包下载位置 "../MS_RemoteCode/internal/data/bb5e44e4febb4fcc88ea6824db4f9689/tmp"
+		打zip包位置 "../MS_RemoteCode/internal/data/bb5e44e4febb4fcc88ea6824db4f9689/"
 	*/
-	filePath := utils.GetParentDirectory(dirName)
-	filePath = fmt.Sprintf("%s/%s.zip", filePath, req.Package)
-	log.Println(dirName)
-	log.Println(filePath)
-	// todo judge fileType 统一为zip
-	utils.Zip(dirName, filePath)
-	// todo 上传接口 接入guohao mongodb_code
+	// filePath为最终文件路径
+	filePath, err := handleFile(dirName, req.Package)
+	if err != nil {
+		resp.Message = err.Error()
+		resp.Code = constant.STATUS_BADREQUEST
+		return resp, nil
+	}
+
+	log.Printf("final file path:%+v", filePath)
+
+	// todo 上传接口 接入guohao
 	//response, err := upload.Upload(ctx, req.Metadata.UserId, req.Metadata.ProjectId, filePath, pb_gen2.FileType(req.Metadata.FileInfo.FileType))
 	//project:=response.ProjectInfo
 	//resp.ProjectInfo=&pb_gen.Project{
@@ -109,10 +113,62 @@ func DownloadRemoteCode(ctx context.Context, req *pb_gen.DownloadRemoteCodeReque
 	//	BinaryAddr:         project.BinaryAddr,
 	//	Classifiers:        project.Classifiers,
 	//}
+
 	//删除文件
-	//defer os.RemoveAll(dirName)
+	defer os.RemoveAll(initPath)
 
 	resp.Message = constant.MESSAGE_OK
 	resp.Code = constant.STATUS_OK
 	return resp, nil
+}
+
+func handleFile(dirName string, fileName string) (string, error) {
+	fileList, err := utils.GetAllFile(dirName)
+	var sourceName string
+	flag := false
+	if len(fileList) > 1 {
+		flag = true
+	}
+	//对于可能存在依赖的情况，只解压package
+	for _, file := range fileList {
+		if strings.Contains(file, fileName) {
+			end := strings.LastIndex(file, "/")
+			sourceName = file[end+1:]
+			break
+		}
+	}
+	filePath := ""
+	//sourceName:=utils.GetSingleFileName(dirName)
+	srcPath := fmt.Sprintf("%s/%s", dirName, sourceName)
+	log.Printf("sourcePath=%+v", srcPath)
+	fileType := utils.JudgeFileTypeByPath(srcPath)
+	// 有依赖的多个文件
+	if flag {
+		log.Println(dirName)
+		name := utils.GetFileName(sourceName)
+		newDirName := strings.ReplaceAll(dirName, "tmp", name)
+		os.Rename(dirName, newDirName)
+		dstPath := fmt.Sprintf("%s/%s.zip", utils.GetParentDirectory(newDirName), name)
+		utils.Zip(newDirName, dstPath)
+		filePath = dstPath
+	} else {
+		if fileType == "whl" {
+			filePath, err = utils.Whl2Zip(srcPath)
+			if err != nil {
+				log.Printf("DownloadRemoteCode whl2Zip err:%+v", err)
+				return "", err
+			}
+		} else if fileType == "gz" {
+			dstZipName := strings.ReplaceAll(sourceName, "tar.gz", "zip")
+			filePath = fmt.Sprintf("%s/%s", dirName, dstZipName)
+			_, err = utils.TarGz2Zip(srcPath, filePath)
+		} else {
+			filePath = fmt.Sprintf("%s/%s", dirName, sourceName)
+			if err != nil {
+				log.Printf("DownloadRemoteCode whl2Zip err:%+v", err)
+				return "", err
+			}
+		}
+	}
+	return filePath, nil
 }
