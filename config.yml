@@ -19,5 +19,5 @@ prd:
   username: "root"
   password: "123456"
   database: "software"
-  consul_addr: "http://133.133.135.42:8500"
-  network_interface: "eth2"
+  consul_addr: "133.133.135.42:8500"
+  network_interface: "docker_gwbridge"

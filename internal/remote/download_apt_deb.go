@@ -9,6 +9,7 @@ import (
 	"remote_code/model"
 	"remote_code/pb_gen"
 	"remote_code/utils"
+	"strings"
 )
 
 func DownloadAptDeb(ctx context.Context, req *pb_gen.DownloadAptDebRequest) (*pb_gen.DownloadAptDebResponse, error) {
@@ -55,10 +56,13 @@ func DownloadAptDebPkg(ctx context.Context, req *pb_gen.DownloadAptDebRequest) (
 
 	//执行pip download命令
 	pwd, _ := os.Getwd()
-	pwd = utils.GetParentDirectory(pwd)
+	for !strings.HasSuffix(pwd, "/MS_RemoteCode") {
+		pwd = utils.GetParentDirectory(pwd)
+	}
+	log.Println(pwd)
 	uuid := utils.GetUUID()
 	//deb文件download地址： ../data/{uuid}/
-	dirName := pwd + "/data/" + uuid
+	dirName := pwd + "/internal/data/" + uuid
 	log.Printf("download path:%+v", dirName)
 	utils.CommandBash("mkdir ../data/" + uuid)
 	command := "apt-get download " + fileName
@@ -76,7 +80,8 @@ func DownloadAptDebPkg(ctx context.Context, req *pb_gen.DownloadAptDebRequest) (
 		resp.Code = constant.STATUS_BADREQUEST
 		return resp, nil
 	}
-	utils.CommandBash("mv ./*.deb ../data/" + uuid)
+	os.Mkdir(dirName, os.ModePerm)
+	utils.CommandBash("mv ./*.deb " + dirName + "/")
 	log.Printf("stdout:%+v", stdout)
 
 	/*

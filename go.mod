@@ -3,7 +3,6 @@ module remote_code
 go 1.17
 
 require (
-	MS_Local v0.0.0-00010101000000-000000000000
 	github.com/hashicorp/consul/api v1.11.0
 	github.com/jinzhu/gorm v1.9.16
 	github.com/satori/go.uuid v1.2.0
@@ -29,6 +28,7 @@ require (
 	github.com/hashicorp/golang-lru v0.5.0 // indirect
 	github.com/hashicorp/serf v0.9.5 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/jinzhu/now v1.1.2 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/mattn/go-colorable v0.1.6 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect

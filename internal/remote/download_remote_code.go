@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"remote_code/config"
 	"remote_code/constant"
 	"remote_code/model"
 	"remote_code/pb_gen"
@@ -13,7 +14,6 @@ import (
 )
 
 func DownloadRemoteCode(ctx context.Context, req *pb_gen.DownloadRemoteCodeRequest) (*pb_gen.DownloadRemoteCodeResponse, error) {
-
 	var args []string
 	resp := &pb_gen.DownloadRemoteCodeResponse{}
 
@@ -55,10 +55,18 @@ func DownloadRemoteCode(ctx context.Context, req *pb_gen.DownloadRemoteCodeReque
 
 	//执行pip download命令
 	pwd, _ := os.Getwd()
-	pwd = utils.GetParentDirectory(pwd)
-	dirName := pwd + "/data/" + utils.GetUUID()
+	for !strings.HasSuffix(pwd, "/MS_RemoteCode") {
+		pwd = utils.GetParentDirectory(pwd)
+	}
+	log.Println(pwd)
+	dirName := pwd + "/internal/data/" + utils.GetUUID()
 	args = append(args, " -d "+dirName)
-	command := "pip3 download " + fileName + strings.Join(args, " ")
+	var command string
+	if config.IsProd() {
+		command = "python3 -m pip download " + fileName + strings.Join(args, " ")
+	} else {
+		command = "pip3 download " + fileName + strings.Join(args, " ")
+	}
 	log.Printf("command from user %+v:%+v", req.Metadata.UserId, command)
 	stdout, stderr, err := utils.CommandBash(command)
 	if err != nil {
