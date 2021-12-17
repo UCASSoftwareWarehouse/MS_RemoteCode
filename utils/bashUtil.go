@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os/exec"
+	"strings"
 )
 
 func CommandBash(command string) (string, string, error) {
@@ -32,10 +33,18 @@ func CommandBash(command string) (string, string, error) {
 		log.Fatal(err)
 		return "", "", err
 	}
-	opBytes, err = ioutil.ReadAll(stderr)
+	opBytes2, err := ioutil.ReadAll(stderr)
 	if err != nil {
 		log.Fatal(err)
 		return "", "", err
 	}
-	return string(opBytes), string(opBytes), nil
+	errStr := handleStderr(string(opBytes2))
+	return string(opBytes), errStr, nil
+}
+
+func handleStderr(stderr string) string {
+	if strings.Contains(stderr, "ERROR:") || strings.Contains(stderr, "E:") {
+		return stderr
+	}
+	return ""
 }

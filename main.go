@@ -7,8 +7,8 @@ import (
 )
 
 func main() {
-	// config.InitConfig()
-	config.InitConfigDefault()
+	config.InitConfig()
+	//config.InitConfigDefault()
 	mongodb.InitEngine()
 	server.StartServer()
 }

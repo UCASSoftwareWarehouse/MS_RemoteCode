@@ -75,7 +75,7 @@ func DownloadAptDebPkg(ctx context.Context, req *pb_gen.DownloadAptDebRequest) (
 		return resp, err
 	}
 	if len(stderr) != 0 {
-		log.Printf("DownloadAptDeb CommandBash err:%+v", err)
+		log.Printf("DownloadAptDeb CommandBash err:%+v", stderr)
 		resp.Message = stderr
 		resp.Code = constant.STATUS_BADREQUEST
 		return resp, nil

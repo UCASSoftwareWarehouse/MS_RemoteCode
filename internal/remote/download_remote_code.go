@@ -76,7 +76,7 @@ func DownloadRemoteCode(ctx context.Context, req *pb_gen.DownloadRemoteCodeReque
 		return resp, err
 	}
 	if len(stderr) != 0 {
-		log.Printf("DownloadRemoteCode CommandBash err:%+v", err)
+		log.Printf("DownloadRemoteCode CommandBash err:%+v", stderr)
 		resp.Message = stderr
 		resp.Code = constant.STATUS_BADREQUEST
 		return resp, nil
@@ -115,7 +115,7 @@ func DownloadRemoteCode(ctx context.Context, req *pb_gen.DownloadRemoteCodeReque
 	//}
 
 	//删除文件
-	defer os.RemoveAll(initPath)
+	//defer os.RemoveAll(initPath)
 
 	resp.Message = constant.MESSAGE_OK
 	resp.Code = constant.STATUS_OK
