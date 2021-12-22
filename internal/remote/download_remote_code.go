@@ -1,12 +1,14 @@
 package remote
 
 import (
+	pb_gen2 "MS_Local/pb_gen"
 	"context"
 	"fmt"
 	"log"
 	"os"
 	"remote_code/config"
 	"remote_code/constant"
+	upload "remote_code/internal/upload_service"
 	"remote_code/model"
 	"remote_code/pb_gen"
 	"remote_code/utils"
@@ -63,7 +65,7 @@ func DownloadRemoteCode(ctx context.Context, req *pb_gen.DownloadRemoteCodeReque
 	args = append(args, " -d "+dirName)
 	var command string
 	if config.IsProd() {
-		command = "python3 -m pip download " + fileName + strings.Join(args, " ")
+		command = "python3 -m pip download " + fileName + " " + strings.Join(args, " ")
 	} else {
 		command = "pip3 download " + fileName + strings.Join(args, " ")
 	}
@@ -76,7 +78,7 @@ func DownloadRemoteCode(ctx context.Context, req *pb_gen.DownloadRemoteCodeReque
 		return resp, err
 	}
 	if len(stderr) != 0 {
-		log.Printf("DownloadRemoteCode CommandBash err:%+v", stderr)
+		log.Printf("DownloadRemoteCode CommandBash err:%+v", err)
 		resp.Message = stderr
 		resp.Code = constant.STATUS_BADREQUEST
 		return resp, nil
@@ -98,23 +100,30 @@ func DownloadRemoteCode(ctx context.Context, req *pb_gen.DownloadRemoteCodeReque
 
 	log.Printf("final file path:%+v", filePath)
 
-	// todo 上传接口 接入guohao
-	//response, err := upload.Upload(ctx, req.Metadata.UserId, req.Metadata.ProjectId, filePath, pb_gen2.FileType(req.Metadata.FileInfo.FileType))
-	//project:=response.ProjectInfo
-	//resp.ProjectInfo=&pb_gen.Project{
-	//	Id:                 project.Id,
-	//	ProjectName:        project.ProjectName,
-	//	UserId:             project.UserId,
-	//	Tags:               project.Tags,
-	//	License:            project.License,
-	//	Updatetime:         project.Updatetime,
-	//	ProjectDescription: project.ProjectDescription,
-	//	CodeAddr:           project.CodeAddr,
-	//	BinaryAddr:         project.BinaryAddr,
-	//	Classifiers:        project.Classifiers,
-	//}
+	response, err := upload.Upload(ctx, req.Metadata.UserId, req.Metadata.ProjectId, filePath, pb_gen2.FileType(req.Metadata.FileInfo.FileType))
+	log.Println(err)
+	log.Println(response)
+	if err != nil {
+		log.Printf("DownloadAptDeb err:%+v", err.Error())
+		resp.Message = "上传失败"
+		resp.Code = constant.STATUS_BADREQUEST
+		return resp, nil
+	}
+	project := response.ProjectInfo
+	resp.ProjectInfo = &pb_gen.Project2{
+		Id:                 project.Id,
+		ProjectName:        project.ProjectName,
+		UserId:             project.UserId,
+		Tags:               project.Tags,
+		License:            project.License,
+		Updatetime:         project.Updatetime,
+		ProjectDescription: project.ProjectDescription,
+		CodeAddr:           project.CodeAddr,
+		BinaryAddr:         project.BinaryAddr,
+		Classifiers:        project.Classifiers,
+	}
 
-	//删除文件
+	// todo 删除文件
 	//defer os.RemoveAll(initPath)
 
 	resp.Message = constant.MESSAGE_OK

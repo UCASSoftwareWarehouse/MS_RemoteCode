@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"os/exec"
 	"remote_code/config"
 	"remote_code/model"
@@ -48,10 +49,10 @@ func TestDownloadRemoteCode2(t *testing.T) {
 	config.InitConfigDefault()
 	model.InitGorm()
 	request := &pb_gen.DownloadRemoteCodeRequest{
-		Metadata: &pb_gen.UploadMetadata{
+		Metadata: &pb_gen.UploadMetadata2{
 			ProjectId: 1,
 			UserId:    1,
-			FileInfo: &pb_gen.FileInfo{
+			FileInfo: &pb_gen.FileInfo2{
 				FileName: "",
 				FileType: 0,
 			},
@@ -71,15 +72,18 @@ func TestDownloadRemoteCode2(t *testing.T) {
 
 //whl test
 func TestDownloadRemoteCode3(t *testing.T) {
-	config.InitConfigDefault()
+	os.Setenv("ENV", "prd")
+	os.Setenv("CONFIG_PATH", "/home/zhujianxing/saas/MS_RemoteCode/config.yml")
+	os.Setenv("NETWORK_INTERFACE", "docker_gwbridge")
+	config.InitConfig()
 	model.InitGorm()
 	request := &pb_gen.DownloadRemoteCodeRequest{
-		Metadata: &pb_gen.UploadMetadata{
-			ProjectId: 1,
+		Metadata: &pb_gen.UploadMetadata2{
+			ProjectId: 6,
 			UserId:    1,
-			FileInfo: &pb_gen.FileInfo{
+			FileInfo: &pb_gen.FileInfo2{
 				FileName: "",
-				FileType: 0,
+				FileType: 1,
 			},
 		},
 		Platform: "",
@@ -95,15 +99,43 @@ func TestDownloadRemoteCode3(t *testing.T) {
 	fmt.Printf("%+v", err)
 }
 
+func TestDownloadRemoteCode5(t *testing.T) {
+	os.Setenv("ENV", "prd")
+	os.Setenv("CONFIG_PATH", "/home/zhujianxing/saas/MS_RemoteCode/config.yml")
+	os.Setenv("NETWORK_INTERFACE", "docker_gwbridge")
+	config.InitConfig()
+	model.InitGorm()
+	request := &pb_gen.DownloadRemoteCodeRequest{
+		Metadata: &pb_gen.UploadMetadata2{
+			ProjectId: 6,
+			UserId:    1,
+			FileInfo: &pb_gen.FileInfo2{
+				FileName: "",
+				FileType: 1,
+			},
+		},
+		Platform: "",
+		NoDeps:   true,
+		//OnlyBinary:    ":all:",
+		PythonVersion: "",
+		Package:       "request2",
+		Version:       "",
+	}
+	code, err := DownloadRemoteCode(context.Background(), request)
+	//os.RemoveAll("./e867c42b-6b78-4090-a656-72dc0cfd88f4")
+	fmt.Printf("%+v", code)
+	fmt.Printf("%+v", err)
+}
+
 //tag.gz test
 func TestDownloadRemoteCode4(t *testing.T) {
 	config.InitConfigDefault()
 	model.InitGorm()
 	request := &pb_gen.DownloadRemoteCodeRequest{
-		Metadata: &pb_gen.UploadMetadata{
+		Metadata: &pb_gen.UploadMetadata2{
 			ProjectId: 1,
 			UserId:    1,
-			FileInfo: &pb_gen.FileInfo{
+			FileInfo: &pb_gen.FileInfo2{
 				FileName: "",
 				FileType: 0,
 			},

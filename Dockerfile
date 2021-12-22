@@ -10,5 +10,6 @@ ENV CONFIG_PATH=/saas/MS_RemoteCode/config.yml
 ENV ENV=prd
 ENV NETWORK_INTERFACE=eth2
 
+RUN apt-get update
 
 CMD ["/bin/bash", "-c", "./main"]

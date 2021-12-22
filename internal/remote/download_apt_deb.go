@@ -1,11 +1,13 @@
 package remote
 
 import (
+	pb_gen2 "MS_Local/pb_gen"
 	"context"
 	"fmt"
 	"log"
 	"os"
 	"remote_code/constant"
+	upload "remote_code/internal/upload_service"
 	"remote_code/model"
 	"remote_code/pb_gen"
 	"remote_code/utils"
@@ -89,16 +91,33 @@ func DownloadAptDebPkg(ctx context.Context, req *pb_gen.DownloadAptDebRequest) (
 		deb包下载位置 "../MS_RemoteCode/internal/data/bb5e44e4febb4fcc88ea6824db4f9689"
 		打zip包位置 "../MS_RemoteCode/internal/data/numpy.zip"
 	*/
-	//filePath := utils.GetParentDirectory(dirName)
-	//filePath = fmt.Sprintf("%s/%s.zip", filePath, req.Package)
-	//log.Println(dirName)
-	//log.Println(filePath)
-	// todo judge fileType 统一为zip
-	//utils.Zip(dirName, filePath)
-	// todo 上传接口 接入guohao mongodb_code & mysql_project
+	debPath := fmt.Sprintf("%s/%s", dirName, utils.GetSingleFileName(dirName))
+	log.Printf("debPath=%+v", debPath)
+	response, err := upload.Upload(ctx, req.Metadata.UserId, req.Metadata.ProjectId, debPath, pb_gen2.FileType(req.Metadata.FileInfo.FileType))
+	log.Println(err)
+	log.Println(response)
+	if err != nil {
+		log.Printf("DownloadAptDeb err:%+v", err.Error())
+		resp.Message = "上传失败"
+		resp.Code = constant.STATUS_BADREQUEST
+		return resp, nil
+	}
+	project := response.ProjectInfo
+	resp.ProjectInfo = &pb_gen.Project2{
+		Id:                 project.Id,
+		ProjectName:        project.ProjectName,
+		UserId:             project.UserId,
+		Tags:               project.Tags,
+		License:            project.License,
+		Updatetime:         project.Updatetime,
+		ProjectDescription: project.ProjectDescription,
+		CodeAddr:           project.CodeAddr,
+		BinaryAddr:         project.BinaryAddr,
+		Classifiers:        project.Classifiers,
+	}
 
-	//删除文件
-	//os.RemoveAll(dirName)
+	// todo 删除文件
+	// os.RemoveAll(dirName)
 
 	resp.Message = constant.MESSAGE_OK
 	resp.Code = constant.STATUS_OK

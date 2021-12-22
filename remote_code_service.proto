@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package pb;
 import "google/protobuf/timestamp.proto";
+import "MS_Local/local_service.proto"
 // option go_package = "path;name";
 // . 表示生成的go文件的存放地址./，会自动生成目录的。
 // pb_gen 表示生成的go文件所属的包名
@@ -53,6 +54,7 @@ message DownloadAptDebRequest{
 message DownloadAptDebResponse{
    string message=1;
    string code=2;
+   Project projectInfo = 3;
 }
 
 enum FileType{
@@ -60,14 +62,11 @@ enum FileType{
    codes = 1;
    binary = 2;
    code_dir = 3;
-   code_file = 4;
 }
 
 message FileInfo{
    string fileName = 1;
    FileType fileType = 2;
-   //  uint64 fileSize = 2;
-   //  google.protobuf.Timestamp updatetime = 3;
 }
 
 message UploadMetadata{

@@ -20,7 +20,7 @@ func Upload(ctx context.Context, uid uint64, pid uint64, fpath string, fileType 
 	}
 	defer file.Close()
 
-	client := &consul.GrpcClient{Name: "MS_local"}
+	client := &consul.GrpcClient{Name: "sw_ms_local"}
 	client.RunConsulClient()
 	local_code := pb_gen2.NewMSLocalClient(client.Conn)
 
